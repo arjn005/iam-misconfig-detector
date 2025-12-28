@@ -31,13 +31,3 @@ IAM misconfigurations are a common cause of cloud security incidents. This tool 
 python -m venv .venv
 source .venv/Scripts/activate
 pip install -r requirements.txt
-
-
-
-## Example output
-
-![IAM Report](docs/report-example.png)
-
-## Example output
-
-![IAM Report](docs/report-example.png)

@@ -1,25 +1,30 @@
-# IAM Misconfiguration Detector (Offline-First)
+# IAM Misconfiguration Detector (Offline + AWS Read-Only)
 
-A Python CLI tool that scans AWS IAM policy JSON files and detects high-risk misconfigurations
-(e.g., wildcard admin permissions, broad `iam:PassRole`, and public assume-role trust policies).
-Generates JSON + HTML reports with remediation guidance.
+A Python CLI tool that scans AWS IAM policies to detect high-risk misconfigurations. It supports:
+- **Offline mode**: scan local IAM policy JSON files
+- **AWS mode (read-only)**: pull IAM policies and trust policies from a real AWS account using AWS credentials
+
+It generates **HTML + JSON** reports with evidence and remediation guidance.
 
 ## Why this matters
-Misconfigured IAM is a common cause of cloud security incidents. This tool highlights dangerous
-permission patterns and provides actionable recommendations aligned with least privilege.
+IAM misconfigurations are a common cause of cloud security incidents. This tool highlights dangerous permission patterns and encourages **least privilege**, safer trust policies, and MFA enforcement for human identities.
 
-## Features (MVP)
-- Offline scanning of IAM policy documents from `.json` files
-- Checks:
-  - Wildcard admin: `Action: "*"` and `Resource: "*"`
-  - Broad `iam:PassRole`
-  - Public trust policies (`Principal: "*"` with `sts:AssumeRole`)
-- Reports:
-  - Console summary
-  - JSON report
-  - HTML report
+## Checks implemented
+- **Wildcard admin**: `Action: "*"` and `Resource: "*"` (CRITICAL)
+- **Broad PassRole**: `iam:PassRole` on `Resource: "*"` (CRITICAL)
+- **Public trust policy**: `Principal: "*"` with `sts:AssumeRole` (CRITICAL)
+- **Overly broad S3 permissions**: sensitive S3 actions with `Resource: "*"` (HIGH)
+- **Missing MFA for high-impact actions** (broad scope) (MEDIUM)
 
-## Quick Start
+## Project structure
+- `src/detector.py` - CLI entry point
+- `src/loaders/` - file loader + AWS IAM loader
+- `src/checks/` - detection rules
+- `src/report/` - HTML + JSON reporting
+- `examples/policies/` - sample insecure policies for testing
+- `reports/` - output folder (generated)
+
+## Quick start
 
 ### 1) Setup
 ```bash
@@ -27,3 +32,12 @@ python -m venv .venv
 source .venv/Scripts/activate
 pip install -r requirements.txt
 
+
+
+## Example output
+
+![IAM Report](docs/report-example.png)
+
+## Example output
+
+![IAM Report](docs/report-example.png)
